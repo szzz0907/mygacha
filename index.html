@@ -494,6 +494,83 @@ button{touch-action:manipulation}
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 }
 </style>
+
+<style id="iphone-ui-fix-v34">
+@media (max-width:700px){
+  /* All pill/segment/card action labels must be centered in both axes. */
+  button,.bigbtn,.mine-actions button,.seg button,.publish,.resultactions button{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    text-align:center!important;
+    line-height:1.2!important;
+    white-space:normal!important;
+  }
+
+  /* CREATE: narrower centered sheet and sensible controls. */
+  #createPage .create-head,#createPage .builder{width:calc(100% - 24px)!important;max-width:460px!important}
+  #createPage .formcard{padding:18px!important}
+  #createPage .uploadbox{min-height:78px!important}
+  #createPage .seg button{height:44px!important;min-height:44px!important;padding:0 10px!important}
+
+  /* MY GACHA: rebuild card instead of inheriting desktop flex sizing. */
+  #minePage .explore-head,#minePage .grid{width:calc(100% - 20px)!important;max-width:460px!important}
+  #minePage .explore-head .bigbtn{width:auto!important;min-width:180px!important;height:42px!important;align-self:flex-start!important}
+  #minePage .machine-card{
+    display:block!important;
+    width:100%!important;
+    border-radius:18px!important;
+    overflow:hidden!important;
+  }
+  #minePage .machine-card .poster{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    max-height:none!important;
+    aspect-ratio:16/9!important;
+    overflow:hidden!important;
+  }
+  #minePage .machine-card .poster img{
+    display:block!important;width:100%!important;height:100%!important;
+    object-fit:cover!important;
+  }
+  #minePage .machine-info{
+    display:block!important;
+    width:100%!important;
+    padding:14px 15px 15px!important;
+    box-sizing:border-box!important;
+  }
+  #minePage .mine-title-row{
+    display:flex!important;align-items:center!important;justify-content:space-between!important;
+    gap:10px!important;
+  }
+  #minePage .mine-title-row h3{font-size:17px!important;line-height:1.25!important;margin:0!important}
+  #minePage .machine-info>p{font-size:11px!important;margin:6px 0 0!important}
+  #minePage .mine-actions{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    gap:8px!important;
+    width:100%!important;
+    margin-top:12px!important;
+  }
+  #minePage .mine-actions button{
+    width:auto!important;
+    min-width:0!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0 15px!important;
+    writing-mode:horizontal-tb!important;
+    word-break:keep-all!important;
+  }
+  #minePage .mine-actions .mine-play{width:100%!important}
+  #minePage .mine-actions .danger{min-width:74px!important}
+
+  /* PLAY: HUD above, 3D centered in the usable stage below it. */
+  #three{top:60px!important;height:calc(100dvh - 60px)!important}
+  .playhud{top:78px!important}
+  .gacha-stats{top:78px!important}
+}
+</style>
 </head>
 <body>
 <header class="topbar">
@@ -884,16 +961,17 @@ async function init3D(){
    controls.minDistance=fitDistance*0.72;
    controls.maxDistance=fitDistance*2.2;
    if(innerWidth<=700){
-     const mobileDistance=fitDistance*1.34;
+     const mobileDistance=fitDistance*1.48;
+     const portraitTarget=fittedCenter.clone();
+     portraitTarget.y += fittedSize.y*0.10;
      camera.position.set(
        fittedCenter.x,
-       fittedCenter.y + fittedSize.y*0.015,
+       portraitTarget.y + mobileDistance*0.015,
        fittedCenter.z + mobileDistance
      );
-     controls.target.copy(fittedCenter);
-     controls.target.y -= fittedSize.y*0.015;
-     controls.minDistance=mobileDistance*0.82;
-     controls.maxDistance=mobileDistance*2.2;
+     controls.target.copy(portraitTarget);
+     controls.minDistance=mobileDistance*0.88;
+     controls.maxDistance=mobileDistance*2.15;
    }
    controls.update();
    mixer=new THREE.AnimationMixer(model);actions=g.animations.map(c=>mixer.clipAction(c));
