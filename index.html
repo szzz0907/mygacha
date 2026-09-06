@@ -1102,6 +1102,15 @@ async function init3D(){
    const fittedSize=fittedBox.getSize(new THREE.Vector3());
    const fittedCenter=fittedBox.getCenter(new THREE.Vector3());
 
+   // V4.7 MOBILE VISUAL CENTER:
+   // The GLB's mathematical bounding box is not the same as the visible cabinet center.
+   // On phones the machine reads ~8% of its width too far left, so shift the whole
+   // model (and all animated children) right while leaving the camera framing untouched.
+   if(window.innerWidth<=700){
+     model.position.x += fittedSize.x*0.08;
+     model.updateMatrixWorld(true);
+   }
+
    const verticalFov=THREE.MathUtils.degToRad(camera.fov);
    const fitHeightDistance=(fittedSize.y*0.5)/Math.tan(verticalFov*0.5);
    const horizontalFov=2*Math.atan(Math.tan(verticalFov*0.5)*camera.aspect);
@@ -1110,11 +1119,6 @@ async function init3D(){
 
    const frontTarget=fittedCenter.clone();
    frontTarget.y -= fittedSize.y*0.13;
-    // V4.6 mobile: center the MACHINE horizontally, independent of the desktop framing.
-    if(window.innerWidth<=700){
-      frontTarget.x=fittedCenter.x;
-      camera.position.x=fittedCenter.x;
-    }
    camera.position.set(
      fittedCenter.x,
      frontTarget.y,
@@ -1298,30 +1302,7 @@ window.addEventListener('hashchange',route);route();
   </div>
 </div>
 
-<style id="v46-mobile-true-center">
-@media (max-width: 700px){
-  /* The 3D stage itself must span the viewport symmetrically. */
-  #three{
-    width:100% !important;
-    left:0 !important;
-    right:0 !important;
-    margin-left:0 !important;
-    margin-right:0 !important;
-    transform:none !important;
-  }
-  #three canvas{
-    width:100% !important;
-    height:100% !important;
-    display:block !important;
-    margin:0 auto !important;
-  }
 
-  /* HUD cards must not affect the machine's visual center. */
-  .playhud,.hud,.play-stats{
-    pointer-events:none;
-  }
-}
-</style>
 
 
 </body></html>
